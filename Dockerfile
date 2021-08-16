@@ -9,6 +9,11 @@ COPY ${JAR_FILE} application.jar
 RUN ["java", "-Djarmode=layertools", "-jar", "application.jar", "extract"]
 
 FROM gcr.io/distroless/java:$DIST_TAG AS production-env
+
+LABEL org.opencontainers.image.title="spring-boot-helloworld-for-k8s" \
+      org.opencontainers.image.authors="ghalajko+github@gmail.com" \
+      org.opencontainers.image.source="https://github.com/cybermaniax/spring-boot-helloworld-for-k8s"
+
 VOLUME /tmp
 WORKDIR application
 
