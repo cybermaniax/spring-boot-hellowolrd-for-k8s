@@ -2,11 +2,11 @@
 # Distroless TAG '11' , '11-debug' , '11-nonroot'
 ARG DIST_TAG=11
 
-FROM openjdk:11-jre-slim as builder
-WORKDIR application
+FROM gcr.io/distroless/java:$DIST_TAG as builder
 ARG JAR_FILE=/build/libs/*.jar
+WORKDIR /application
 COPY ${JAR_FILE} application.jar
-RUN java -Djarmode=layertools -jar application.jar extract
+RUN ["java", "-Djarmode=layertools", "-jar", "application.jar", "extract"]
 
 FROM gcr.io/distroless/java:$DIST_TAG AS production-env
 VOLUME /tmp
