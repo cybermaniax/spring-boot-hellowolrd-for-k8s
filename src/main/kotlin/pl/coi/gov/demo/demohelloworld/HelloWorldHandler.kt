@@ -26,11 +26,11 @@ class HelloWorldHandler {
 
     @GetMapping(path = ["/test"], produces = [MediaType.TEXT_PLAIN_VALUE])
     fun helloWorld(@RequestHeader headers:Map<String, String>): String {
-        var message = "${msg} : ${Random.nextInt()}ui";
+        var message = "${msg} : ${Random.nextInt()}";
 
-        var span: Span? = null
+        var span: Span?
         tracer.let {
-            span = it?.nextSpan()
+            span = it.nextSpan()
             span?.start()
         }
 
