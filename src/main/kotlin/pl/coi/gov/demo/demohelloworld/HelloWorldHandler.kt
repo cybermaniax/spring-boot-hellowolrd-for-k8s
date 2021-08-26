@@ -26,20 +26,16 @@ class HelloWorldHandler {
 
     @GetMapping(path = ["/test"], produces = [MediaType.TEXT_PLAIN_VALUE])
     fun helloWorld(@RequestHeader headers:Map<String, String>): String {
-        var message = "${msg} : ${Random.nextInt()}";
-
         var span: Span? = null
         if (::tracer.isInitialized){
-            logger.info { "Init tracer start" }
             span = tracer.nextSpan().start()
         }
 
+        var message = "${msg} : ${Random.nextInt()}";
+        Thread.sleep(Random.nextLong(100,1000));
         logger.info( "msg={} , header={}", message , headers)
 
-        span.let {
-            logger.info { "Init tracer end" }
-            it?.tag("msg", message)?.end()
-        }
+        span?.tag("msg", message)?.end()
         return message;
     }
 }
