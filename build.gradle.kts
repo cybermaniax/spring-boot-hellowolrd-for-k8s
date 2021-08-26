@@ -17,6 +17,8 @@ repositories {
 	mavenCentral()
 }
 
+extra["springCloudVersion"] = "2020.0.3"
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -27,8 +29,17 @@ dependencies {
 
 	implementation("io.micrometer:micrometer-registry-prometheus:1.7.2")
 
+	implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
+	implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
+
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
 }
 
 tasks {
