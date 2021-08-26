@@ -28,17 +28,17 @@ class HelloWorldHandler {
     fun helloWorld(@RequestHeader headers:Map<String, String>): String {
         var message = "${msg} : ${Random.nextInt()}";
 
-        var span: Span?
-        tracer.let {
-            span = it.nextSpan()
-            span?.start()
+        var span: Span? = null
+        if (::tracer.isInitialized){
+            logger.info { "Init tracer start" }
+            span = tracer.nextSpan().start()
         }
 
         logger.info( "msg={} , header={}", message , headers)
 
         span.let {
-            it?.tag("msg", message)
-            it?.end()
+            logger.info { "Init tracer end" }
+            it?.tag("msg", message)?.end()
         }
         return message;
     }

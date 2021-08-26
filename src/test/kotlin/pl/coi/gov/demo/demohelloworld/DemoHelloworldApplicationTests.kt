@@ -1,7 +1,6 @@
 package pl.coi.gov.demo.demohelloworld
 
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,8 +13,7 @@ class DemoHelloworldApplicationTests {
 
 	@Test
 	fun msg() {
-		assertEquals("Hello World!",
-			component.helloWorld(mapOf( "t" to "t")))
+		assertTrue(component.helloWorld(mapOf( "t" to "t")).contains("Hello World!"))
 	}
 
 }
