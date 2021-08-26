@@ -61,7 +61,7 @@ clean-image:
 	@docker rmi ${NAMESPACE}${IMAGE_NAME}:$(HASH)  || true
 	@docker rmi ${NAMESPACE}${IMAGE_NAME}:${VERSION}  || true
 	@docker rmi ${NAMESPACE}${IMAGE_NAME}:$(HASH)-debug  || true
-	@docker rmi ${NAMESPACE} ${IMAGE_NAME}:${VERSION}-debug  || true
+	@docker rmi ${NAMESPACE}${IMAGE_NAME}:${VERSION}-debug  || true
 
 .PHONY: push
 push: all
@@ -69,7 +69,7 @@ push: all
 	@docker push ${NAMESPACE}${IMAGE_NAME}:$(HASH)
 	@docker push ${NAMESPACE}${IMAGE_NAME}:${VERSION}
 	@docker push ${NAMESPACE}${IMAGE_NAME}:$(HASH)-debug
-	@docker push ${NAMESPACE} ${IMAGE_NAME}:${VERSION}-debug
+	@docker push ${NAMESPACE}${IMAGE_NAME}:${VERSION}-debug
 
 .PHONY: clean-image
 clean: clean-image
