@@ -39,6 +39,10 @@ IMAGE_HASH_SUFIX = $(if $(findstring debug,$*),-debug)
 IMAGE_HASH_TAG 		= "${NAMESPACE}${IMAGE_NAME}:${GIT_HASH}$(IMAGE_HASH_SUFIX)"
 IMAGE_VERSION_TAG = "${NAMESPACE}${IMAGE_NAME}:${VERSION}$(IMAGE_HASH_SUFIX)"
 
+#DOCKER_BUILD_CMD := "docker buildx build --progress=plain --compress"
+DOCKER_BUILD_CMD := docker image build
+
+
 # TASKS
 .PHONY: all
 all: image-11 image-11-debug
@@ -49,7 +53,7 @@ build:
 
 image-%: build
 	@echo "+ $@"
-	$(HIDE)docker buildx build --progress=plain --compress --build-arg DIST_TAG=$* \
+	$(HIDE)${DOCKER_BUILD_CMD} --build-arg DIST_TAG=$* \
 		-t $(IMAGE_HASH_TAG) \
 		-t $(IMAGE_VERSION_TAG) \
 		-f ${DOCKERFILE} $(ENV_FILE_PARAM) ${CUR_DIR}
