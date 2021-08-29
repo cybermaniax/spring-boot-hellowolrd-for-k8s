@@ -4,6 +4,13 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+# Hide or not the calls depending of VERBOSE
+ifneq ($(VERBOSE),TRUE)
+    HIDE = @
+else
+    HIDE =
+endif
+
 CUR_DIR	= $(shell pwd)
 DOCKERFILE = "${CUR_DIR}/Dockerfile"
 IMAGE_NAME ?= "demo/spring-boot-helloworld-for-k8s"
@@ -13,8 +20,9 @@ EXECUTABLES = git docker
 K := $(foreach exec,$(EXECUTABLES),\
         $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 
-BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-HASH := $(shell git rev-parse --short HEAD)
+# Get Current Branch and TAG
+GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+GIT_HASH := $(shell git rev-parse --short HEAD)
 GIT_TAG := $(shell git describe --tags --exact-match $(git rev-parse HEAD) 2>/dev/null)
 
 ifdef DOCKER_REPOSITORY
@@ -22,55 +30,46 @@ ifdef DOCKER_REPOSITORY
 endif
 
 ifeq ($(GIT_TAG),)
-	VERSION	?= ${BRANCH}
+	VERSION	?= ${GIT_BRANCH}
 else
 	VERSION	?= ${GIT_TAG}
 endif
 
+IMAGE_HASH_SUFIX = $(if $(findstring debug,$*),-debug)
+IMAGE_HASH_TAG 		= "${NAMESPACE}${IMAGE_NAME}:${GIT_HASH}$(IMAGE_HASH_SUFIX)"
+IMAGE_VERSION_TAG = "${NAMESPACE}${IMAGE_NAME}:${VERSION}$(IMAGE_HASH_SUFIX)"
+
 # TASKS
 .PHONY: all
-all: image image-debug
+all: image-11 image-11-debug
 
 .PHONY: build
 build:
-	@${CUR_DIR}/gradlew --console=plain -x test bootJar
+	$(HIDE)${CUR_DIR}/gradlew --console=plain -x test bootJar
 
-.PHONY: image
-image: build
+image-%: build
 	@echo "+ $@"
-	@docker buildx build --progress=plain --compress --build-arg DIST_TAG=11 -t ${NAMESPACE}${IMAGE_NAME}:$(HASH) -f ${DOCKERFILE} \
-		$(ENV_FILE_PARAM) ${CUR_DIR}
-	@docker tag ${NAMESPACE}${IMAGE_NAME}:$(HASH) ${NAMESPACE}${IMAGE_NAME}:${VERSION}
-	@echo 'Done.'
-	@docker images --format '{{.Repository}}:{{.Tag}}\t\t Built: {{.CreatedSince}}\t\tSize: {{.Size}}' | \
-	      grep ${NAMESPACE}${IMAGE_NAME}:$(HASH)
+	$(HIDE)docker buildx build --progress=plain --compress --build-arg DIST_TAG=$* \
+		-t $(IMAGE_HASH_TAG) \
+		-t $(IMAGE_VERSION_TAG) \
+		-f ${DOCKERFILE} $(ENV_FILE_PARAM) ${CUR_DIR}
+	@echo "Done. $@"
+	$(HIDE)docker images --format '{{.Repository}}:{{.Tag}}\t\t Built: {{.CreatedSince}}\t\tSize: {{.Size}}' | \
+	      grep $(IMAGE_HASH_TAG)
 
-.PHONY: image-debug
-image-debug: build
+clean-image-%:
 	@echo "+ $@"
-	@docker buildx build --progress=plain --compress --build-arg DIST_TAG=11-debug \
-		-t ${NAMESPACE}${IMAGE_NAME}:$(HASH)-debug -f ${DOCKERFILE} $(ENV_FILE_PARAM)  ${CUR_DIR}
-	@docker tag ${NAMESPACE}${IMAGE_NAME}:$(HASH)-debug ${NAMESPACE}${IMAGE_NAME}:${VERSION}-debug
-	@echo 'Done.'
-	@docker images --format '{{.Repository}}:{{.Tag}}\t\t Built: {{.CreatedSince}}\t\tSize: {{.Size}}' | \
-	      grep ${NAMESPACE}${IMAGE_NAME}:$(HASH)-debug
+	$(HIDE)docker rmi $(IMAGE_HASH_TAG) || true
+	$(HIDE)docker rmi $(IMAGE_VERSION_TAG)  || true
 
-.PHONY: clean-image
-clean-image:
-	@echo "+ $@"
-	@docker rmi ${NAMESPACE}${IMAGE_NAME}:$(HASH)  || true
-	@docker rmi ${NAMESPACE}${IMAGE_NAME}:${VERSION}  || true
-	@docker rmi ${NAMESPACE}${IMAGE_NAME}:$(HASH)-debug  || true
-	@docker rmi ${NAMESPACE}${IMAGE_NAME}:${VERSION}-debug  || true
+push-%: image-%
+	$(HIDE)docker push $(IMAGE_HASH_TAG)
+	$(HIDE)docker push $(IMAGE_VERSION_TAG)
 
 .PHONY: push
-push: all
+push: push-11 push-11-debug
 	@echo "+ $@"
-	@docker push ${NAMESPACE}${IMAGE_NAME}:$(HASH)
-	@docker push ${NAMESPACE}${IMAGE_NAME}:${VERSION}
-	@docker push ${NAMESPACE}${IMAGE_NAME}:$(HASH)-debug
-	@docker push ${NAMESPACE}${IMAGE_NAME}:${VERSION}-debug
 
-.PHONY: clean-image
-clean: clean-image
-	@${CUR_DIR}/gradlew --console=plain clean
+.PHONY: clean
+clean: clean-image-11 clean-image-11-debug
+	$(HIDE)${CUR_DIR}/gradlew --console=plain clean
