@@ -1,10 +1,15 @@
+os: linux
 language: java
-install: true
+install: make
 
 jdk: openjdk11
 
+services:
+  - docker
+
 script:
-  - ./gradlew build
+  - ./gradlew -Dorg.gradle.daemon=false build
+  - make all
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
