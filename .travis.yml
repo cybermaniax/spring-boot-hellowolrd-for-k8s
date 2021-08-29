@@ -1,5 +1,4 @@
 language: java
-install: make
 os: linux
 dist: focal
 
@@ -9,8 +8,8 @@ services:
   - docker
 
 script:
-  - make all
   - ./gradlew -Dorg.gradle.daemon=false build
+  - make all
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
