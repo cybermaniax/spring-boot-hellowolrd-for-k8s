@@ -4,7 +4,6 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 plugins {
 	id("org.springframework.boot") version "2.5.3"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	id("com.palantir.docker") version "0.27.0"
 	kotlin("jvm") version "1.5.21"
 	kotlin("plugin.spring") version "1.5.21"
 }
@@ -32,6 +31,9 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
 	implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
 
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
+	runtimeOnly("org.hsqldb:hsqldb")
+
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
@@ -57,9 +59,4 @@ tasks {
 	withType<BootJar> {
 		layered()
 	}
-
-	docker {
-		name = "spring-demo/spring-boot-helloworld-for-k8s:0.0.2"
-	}
-
 }
