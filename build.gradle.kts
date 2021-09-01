@@ -32,6 +32,7 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
 
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
+	runtimeOnly("org.postgresql:postgresql:42.2.23")
 	runtimeOnly("org.hsqldb:hsqldb")
 
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
