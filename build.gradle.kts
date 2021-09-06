@@ -35,6 +35,8 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql:42.2.23")
 	runtimeOnly("org.hsqldb:hsqldb")
 
+	implementation("com.github.gavlyukovskiy:datasource-proxy-spring-boot-starter:1.7.1")
+
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

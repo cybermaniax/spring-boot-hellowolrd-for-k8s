@@ -2,6 +2,7 @@ package pl.coi.gov.demo.demohelloworld
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cloud.sleuth.annotation.NewSpan
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -23,6 +24,7 @@ class CountryHandler {
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
 
+    @NewSpan
     @GetMapping(path = ["/test/country/{id}"], produces = [MediaType.TEXT_PLAIN_VALUE])
     fun get(@PathVariable("id") id:Int): ResponseEntity<String> {
         logger.info("GET {}", id)
@@ -41,6 +43,7 @@ class CountryHandler {
             return ResponseEntity.notFound().build()
     }
 
+    @NewSpan
     @GetMapping(path = ["/test/country"], produces = [MediaType.TEXT_PLAIN_VALUE])
     fun list(): ResponseEntity<StringBuilder> {
         logger.info("list")
@@ -59,6 +62,7 @@ class CountryHandler {
             return ResponseEntity.notFound().build()
     }
 
+    @NewSpan
     @PostMapping(path = ["/test/country"], produces = [MediaType.TEXT_PLAIN_VALUE])
     fun post(@RequestParam("name") name:String): ResponseEntity<Void> {
         logger.info("post {}", name)
