@@ -37,6 +37,9 @@ dependencies {
 
 	implementation("com.github.gavlyukovskiy:datasource-proxy-spring-boot-starter:1.7.1")
 
+	runtimeOnly("net.logstash.logback:logstash-logback-encoder:6.6")
+	runtimeOnly("ch.qos.logback:logback-classic:1.2.5")
+
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
